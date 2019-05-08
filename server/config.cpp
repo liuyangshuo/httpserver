@@ -10,11 +10,33 @@ char *conf_path(const char *path, const char *file)
     return buf;
 }
 
+string get_val(string str)
+{
+    string::iterator str_beg = str.begin();
+    int pos = str.find(' ');
+    advance(str_beg, pos + 1);
+    string value(str_beg, str.end());
+    return value;
+}
+
+void parse_conf(string str)
+{
+    if (str.find("work") != string::npos)
+    {
+        string val = get_val(str);
+        work_num = stoi(val);
+    }
+    if (str.find("threads") != string::npos)
+    {
+        string val = get_val(str);
+        thread_num = stoi(val);
+    }
+}
+
 void conf_init(const char *path, const char *file)
 {
     struct stat sb;
     int fd;
-    struct flock lock;
     char *conf_file = conf_path(path, file);
     string line;
     if (file == NULL)
@@ -31,7 +53,7 @@ void conf_init(const char *path, const char *file)
     infile.open(conf_file, ios::in);
     while(getline(infile, line))
     {
-        cout << line << endl;
+        parse_conf(line);
     }
     infile.close();
 }
